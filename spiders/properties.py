@@ -2,6 +2,11 @@ import scrapy
 from scrapy.http import FormRequest, Request
 import sqlite3
 import os
+from dotenv import load_dotenv
+
+load_dotenv()
+
+os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
 class PropertiesSpider(scrapy.Spider):
     name = "foxtons-spider"
@@ -14,14 +19,15 @@ class PropertiesSpider(scrapy.Spider):
     property_ids = []
 
     def __init__(self):
-        self.con = sqlite3.connect("sqlite3/foxtons.db")
+        self.con = sqlite3.connect("../sqlite3/foxtons.db")
         self.cur = self.con.cursor()
 
     def start_requests(self):
         login_url = "https://www.foxtons.co.uk/auth/enter/?mode=login"
         return [FormRequest(
             login_url,
-            formdata=dict(email=os.environ["FOXTONS_EMAIL"], password=os.environ["FOXTONS_PASSWORD"]),
+            formid="auth_form",
+            formdata=dict(email=os.environ["FOXTONS_EMAIL"], password=os.environ["FOXTONS_PASSWORD"], mode="login", variance="default"),
             callback=self.logged_in,
         )]
 

@@ -4,6 +4,11 @@ from scrapy.http import FormRequest, Request
 import sqlite3
 import re
 import os
+from dotenv import load_dotenv
+
+load_dotenv()
+
+os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
 
 class TimelineSpider(scrapy.Spider):
@@ -13,7 +18,7 @@ class TimelineSpider(scrapy.Spider):
     property_ids = []
 
     def __init__(self):
-        self.con = sqlite3.connect("/Users/jake/oss/foxtons-crawl/sqlite3/foxtons.db")
+        self.con = sqlite3.connect("../sqlite3/foxtons.db")
         self.cur = self.con.cursor()
 
     def start_requests(self):

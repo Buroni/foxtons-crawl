@@ -1,9 +1,10 @@
 import sys
 import sqlite3
-from dotenv import load_dotenv
 import os
 
-con = sqlite3.connect("sqlite3/foxtons.db")
+os.chdir(os.path.dirname(os.path.abspath(__file__)))
+
+con = sqlite3.connect("foxtons.db")
 cur = con.cursor()
 
 action = sys.argv[1]
