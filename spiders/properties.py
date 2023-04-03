@@ -1,7 +1,7 @@
 import scrapy
 from scrapy.http import FormRequest, Request
 import sqlite3
-
+import os
 
 class PropertiesSpider(scrapy.Spider):
     name = "foxtons-spider"
@@ -21,7 +21,7 @@ class PropertiesSpider(scrapy.Spider):
         login_url = "https://www.foxtons.co.uk/auth/enter/?mode=login"
         return [FormRequest(
             login_url,
-            formdata=dict(email="hazzystane@gmail.com", password="fuckfoxtons123"),
+            formdata=dict(email=os.environ["FOXTONS_EMAIL"], password=os.environ["FOXTONS_PASSWORD"]),
             callback=self.logged_in,
         )]
 
