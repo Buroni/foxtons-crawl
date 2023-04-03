@@ -26,6 +26,7 @@ elif action == "timeline":
             id TEXT,
             is_reduced BOOLEAN,
             scrape_date TEXT,
+            scrape_epoch REAL,
             PRIMARY KEY (id, scrape_date)
         )
     """)

@@ -10,7 +10,8 @@ os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
 class PropertiesSpider(scrapy.Spider):
     name = "foxtons-spider"
-    start_urls = [
+    start_urls = ["https://www.foxtons.co.uk/auth/enter/?mode=login"]
+    property_urls = [
         f"https://www.foxtons.co.uk/properties-to-rent/london?travel_%7Bn%7D_mode=public_transport&travel_%7Bn%7D_travel_time=45&order_by=latest&bedrooms_from={n}&bedrooms_to={n}"
         for n in range(1, 5)
     ]
@@ -22,20 +23,25 @@ class PropertiesSpider(scrapy.Spider):
         self.con = sqlite3.connect("../sqlite3/foxtons.db")
         self.cur = self.con.cursor()
 
-    def start_requests(self):
-        login_url = "https://www.foxtons.co.uk/auth/enter/?mode=login"
-        return [FormRequest(
-            login_url,
-            formid="auth_form",
-            formdata=dict(email=os.environ["FOXTONS_EMAIL"], password=os.environ["FOXTONS_PASSWORD"], mode="login", variance="default"),
+    def parse(self, response):
+        return FormRequest.from_response(
+            response,
+            formdata=dict(
+                email=os.environ["FOXTONS_EMAIL"],
+                password=os.environ["FOXTONS_PASSWORD"],
+                mode="login",
+                variance="default",
+                remember_me="1",
+            ),
             callback=self.logged_in,
-        )]
+            formid="auth_form",
+        )
 
     def logged_in(self, *a):
-        for url in self.start_urls:
-            yield Request(url=url, callback=self.parse)
+        for url in self.property_urls:
+            yield Request(url=url, callback=self.parse_property)
 
-    def parse(self, response):
+    def parse_property(self, response):
         for property_ in response.css(".property_wrapper"):
             link = property_.xpath(".//h6/a")
             href = "https://www.foxtons.co.uk" + link.xpath("./@href").get()
