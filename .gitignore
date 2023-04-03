@@ -1,0 +1,6 @@
+.idea
+.env
+.venv/
+sqlite3/foxtons.db
+sqlite3/foxtons.db-journal
+**/__pycache__/
